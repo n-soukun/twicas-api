@@ -6,4 +6,6 @@ export type {
   SupporterUser,
   Category,
   SubCategory,
+  WebHook,
+  WebhookPayload,
 } from "./schema";

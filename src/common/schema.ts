@@ -94,3 +94,10 @@ export const webHookScheme = z.looseObject({
   event: z.string(),
 });
 export type WebHook = z.infer<typeof webHookScheme>;
+
+export const webhookPayloadScheme = z.looseObject({
+  signature: z.string(),
+  movie: movieScheme,
+  broadcaster: userScheme,
+});
+export type WebhookPayload = z.infer<typeof webhookPayloadScheme>;
