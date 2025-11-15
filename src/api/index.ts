@@ -15,6 +15,7 @@ import {
   unsetCurrentLiveHashtag,
   SetCurrentLiveSubtitleParams,
   SetCurrentLiveHashtagParams,
+  GetMoviesByUserParams,
 } from "./movie";
 import {
   getComments,
@@ -207,10 +208,7 @@ export class TwiCasClient {
    * https://apiv2-doc.twitcasting.tv/#get-movies-by-user
    * @param userId ユーザの`id`または`screen_id`
    */
-  async getMoviesByUser(
-    userId: string,
-    params: Parameters<typeof getMoviesByUser>[1]
-  ) {
+  async getMoviesByUser(userId: string, params: GetMoviesByUserParams = {}) {
     const res = await getMoviesByUser(userId, params, this._axiosInstance);
     return this._toReturnFormat(res);
   }
@@ -271,7 +269,7 @@ export class TwiCasClient {
    *
    * https://apiv2-doc.twitcasting.tv/#get-comments
    */
-  async getComments(movieId: string, params: GetCommentsParams) {
+  async getComments(movieId: string, params: GetCommentsParams = {}) {
     const res = await getComments(movieId, params, this._axiosInstance);
     return this._toReturnFormat(res);
   }
@@ -305,7 +303,7 @@ export class TwiCasClient {
    *
    * https://apiv2-doc.twitcasting.tv/#get-gifts
    */
-  async getGifts(params: GetGiftsParams) {
+  async getGifts(params: GetGiftsParams = {}) {
     const res = await getGifts(params, this._axiosInstance);
     return this._toReturnFormat(res);
   }
@@ -350,7 +348,10 @@ export class TwiCasClient {
    * https://apiv2-doc.twitcasting.tv/#supporting-list
    * @param userId ユーザの`id`または`screen_id`
    */
-  async getSupportingList(userId: string, params: GetSupportingListParams) {
+  async getSupportingList(
+    userId: string,
+    params: GetSupportingListParams = {}
+  ) {
     const res = await getSupportingList(userId, params, this._axiosInstance);
     return this._toReturnFormat(res);
   }
@@ -403,7 +404,7 @@ export class TwiCasClient {
    *
    * https://apiv2-doc.twitcasting.tv/#get-webhook-list
    */
-  async getWebHookList(params: GetWebHookListParams) {
+  async getWebHookList(params: GetWebHookListParams = {}) {
     const res = await getWebHookList(params, this._axiosInstance);
     return this._toReturnFormat(res);
   }
