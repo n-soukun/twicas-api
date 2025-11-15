@@ -61,7 +61,12 @@ async function main() {
   console.log(user.data);
 
   // ライブ検索
-  const live = await client.searchLiveMovies({ q: "", limit: 10 });
+  const live = await client.searchLiveMovies({
+    limit: 10,
+    type: "word",
+    context: "雑談",
+    lang: "ja",
+  });
   console.log(live.data);
 }
 
