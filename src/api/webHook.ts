@@ -2,13 +2,13 @@ import type { AxiosInstance, AxiosResponse } from "axios";
 import z from "zod";
 import { webHookScheme } from "../common/schema";
 
-// ---- Get Categories ---------------------------- //
-// https://apiv2-doc.twitcasting.tv/#get-categories //
-// ------------------------------------------------ //
+// ---- Get WebHook List ---------------------------- //
+// https://apiv2-doc.twitcasting.tv/#get-webhook-list //
+// -------------------------------------------------- //
 
 const getWebHookListParamsScheme = z.object({
-  limit: z.number().min(1).max(50).default(50),
-  offset: z.number().min(0).default(0),
+  limit: z.number().min(1).max(50).optional(),
+  offset: z.number().min(0).optional(),
   user_id: z.string().optional(),
 });
 export type GetWebHookListParams = z.infer<typeof getWebHookListParamsScheme>;

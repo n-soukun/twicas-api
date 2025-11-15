@@ -30,8 +30,8 @@ export async function getMovieInfo(
 // ---------------------------------------------------- //
 
 const getMoviesByUserParamsScheme = z.object({
-  offset: z.number().min(0).max(1000).default(0),
-  limit: z.number().min(1).max(50).default(20),
+  offset: z.number().min(0).max(1000).optional(),
+  limit: z.number().min(1).max(50).optional(),
   slice_id: z.string().optional(),
 });
 export type GetMoviesByUserParams = z.infer<typeof getMoviesByUserParamsScheme>;

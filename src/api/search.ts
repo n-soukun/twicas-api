@@ -8,7 +8,7 @@ import { movieScheme, userScheme } from "../common/schema";
 
 const searchUsersParamsScheme = z.object({
   words: z.string(),
-  limit: z.number().min(1).max(50).default(10),
+  limit: z.number().min(1).max(50).optional(),
   lang: z.literal("ja"),
 });
 export type SearchUsersParams = z.infer<typeof searchUsersParamsScheme>;
@@ -39,14 +39,14 @@ export async function searchUsers(
 
 const searchLiveMoviesParamsScheme = z
   .object({
-    limit: z.number().min(1).max(100).default(10),
+    limit: z.number().min(1).max(100).optional(),
     type: z.enum(["tag", "word", "category"]),
     context: z.string(),
     lang: z.literal("ja"),
   })
   .or(
     z.object({
-      limit: z.number().min(1).max(100).default(10),
+      limit: z.number().min(1).max(100).optional(),
       type: z.enum(["new", "recommend"]),
       lang: z.literal("ja"),
     })

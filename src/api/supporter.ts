@@ -97,8 +97,8 @@ export async function unsupportUser(
 // ------------------------------------------------- //
 
 const getSupportingListParamsScheme = z.object({
-  offset: z.number().min(0).default(0),
-  limit: z.number().min(1).max(20).default(20),
+  offset: z.number().min(0).optional(),
+  limit: z.number().min(1).max(20).optional(),
 });
 export type GetSupportingListParams = z.infer<
   typeof getSupportingListParamsScheme
@@ -133,8 +133,8 @@ export async function getSupportingList(
 // ------------------------------------------------ //
 
 const getSupporterListParamsScheme = z.object({
-  offset: z.number().min(0).default(0),
-  limit: z.number().min(1).max(20).default(20),
+  offset: z.number().min(0).optional(),
+  limit: z.number().min(1).max(20).optional(),
   sort: z.enum(["new", "ranking"]),
 });
 export type GetSupporterListParams = z.infer<

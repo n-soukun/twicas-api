@@ -7,7 +7,7 @@ import { giftScheme } from "../common/schema";
 // ------------------------------------------- //
 
 const getGiftsParamsScheme = z.object({
-  slice_id: z.number().min(-1).default(-1),
+  slice_id: z.number().min(-1).optional(),
 });
 export type GetGiftsParams = z.infer<typeof getGiftsParamsScheme>;
 

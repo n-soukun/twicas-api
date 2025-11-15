@@ -7,8 +7,8 @@ import { commentScheme } from "../common/schema";
 // ---------------------------------------------- //
 
 const getCommentsParamsScheme = z.object({
-  offset: z.number().min(0).default(0),
-  limit: z.number().min(1).max(50).default(20),
+  offset: z.number().min(0).optional(),
+  limit: z.number().min(1).max(50).optional(),
   slice_id: z.string().optional(),
 });
 export type GetCommentsParams = z.infer<typeof getCommentsParamsScheme>;
