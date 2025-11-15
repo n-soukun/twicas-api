@@ -10,6 +10,7 @@ const errorScheme = z.object({
 
 export class TwiCasAPIError extends Error {
   code: number;
+  response: AxiosResponse;
   constructor(response: AxiosResponse) {
     const parsed = errorScheme.safeParse(response.data);
     if (parsed.success) {
@@ -17,10 +18,12 @@ export class TwiCasAPIError extends Error {
       super(message);
       this.name = "TwicasAPIError";
       this.code = code;
+      this.response = response;
     } else {
       super("Unknown API error");
       this.name = "TwicasAPIError";
       this.code = -1;
+      this.response = response;
     }
   }
 }
