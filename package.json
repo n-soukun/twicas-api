@@ -15,6 +15,11 @@
     "twitcasting",
     "api"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/n-soukun/twicas-api.git"
+  },
+  "homepage": "https://github.com/n-soukun/twicas-api#readme",
   "author": "n-soukun",
   "license": "MIT",
   "packageManager": "pnpm@10.18.0",
