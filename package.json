@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "test": "vitest",
@@ -24,6 +25,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
+    "dotenv": "^17.2.3",
     "msw": "^2.12.1",
     "ts-node": "^10.9.2",
     "vitest": "^4.0.9"

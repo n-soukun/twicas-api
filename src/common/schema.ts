@@ -71,3 +71,26 @@ export const supporterUserScheme = userScheme.extend({
   total_point: z.number(),
 });
 export type SupporterUser = z.infer<typeof supporterUserScheme>;
+
+// https://apiv2-doc.twitcasting.tv/#sub-category-object
+export const subCategoryScheme = z.looseObject({
+  id: z.string(),
+  name: z.string(),
+  count: z.number(),
+});
+export type SubCategory = z.infer<typeof subCategoryScheme>;
+
+// https://apiv2-doc.twitcasting.tv/#category-object
+export const categoryScheme = z.looseObject({
+  id: z.string(),
+  name: z.string(),
+  sub_categories: z.array(subCategoryScheme),
+});
+export type Category = z.infer<typeof categoryScheme>;
+
+// https://apiv2-doc.twitcasting.tv/#webhook-object
+export const webHookScheme = z.looseObject({
+  user_id: z.string(),
+  event: z.string(),
+});
+export type WebHook = z.infer<typeof webHookScheme>;

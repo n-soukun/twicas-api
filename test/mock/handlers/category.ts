@@ -1,0 +1,31 @@
+import { http, HttpResponse } from "msw";
+import type { GetCategoriesResponse } from "../../../src/api/category";
+
+const exampleGetCategoriesResponse = {
+  categories: [
+    {
+      id: "_channel",
+      name: "チャンネル",
+      sub_categories: [
+        { id: "_system_channel_5", name: "ミュージックch", count: 100 },
+        { id: "_system_channel_6", name: "ママch", count: 49 },
+        { id: "_system_channel_7", name: "アニメch", count: 42 },
+      ],
+    },
+    {
+      id: "girls_jp",
+      name: "女子CAS",
+      sub_categories: [
+        { id: "girls_face_jp", name: "女子：顔出し", count: 66 },
+        { id: "girls_jcjk_jp", name: "女子：JCJK", count: 17 },
+        { id: "girls_ljk_jp", name: "女子：LJK", count: 89 },
+      ],
+    },
+  ],
+};
+
+export const categoryHandlers = [
+  http.get<never, never, GetCategoriesResponse>("*/categories", () => {
+    return HttpResponse.json(exampleGetCategoriesResponse);
+  }),
+];
