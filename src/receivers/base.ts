@@ -6,7 +6,7 @@ export type EventSubEvents = {
   received: [data: WebhookPayload];
 };
 
-export class WebHookReceiver extends Emitter<EventSubEvents> {
+export class BaseWebHookReceiver extends Emitter<EventSubEvents> {
   private _signature: string;
   constructor(signature: string) {
     super();

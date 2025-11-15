@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
-import { WebHookReceiver } from "./base";
+import { BaseWebHookReceiver } from "./base";
 
-export class ExpressWebHookReceiver extends WebHookReceiver {
+export class TwiCasWebHookReceiver extends BaseWebHookReceiver {
   handleRequest(req: Request, res: Response) {
     const response = this.receivePayload(req.body);
     res.status(response.status);
