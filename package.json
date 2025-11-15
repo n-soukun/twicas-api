@@ -1,6 +1,6 @@
 {
   "name": "twicas-api",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "TwiCas API v2 向けの軽量 TypeScript クライアントです。",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
