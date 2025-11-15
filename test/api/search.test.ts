@@ -18,7 +18,10 @@ describe("search API zod schema and params", () => {
   });
 
   test("searchLiveMovies variant with context parses", async () => {
-    const res = await searchLiveMovies({ type: "tag", context: "music", lang: "ja" }, client);
+    const res = await searchLiveMovies(
+      { type: "tag", context: "music", lang: "ja" },
+      client
+    );
     expect(res.data).toHaveProperty("movies");
     expect(Array.isArray(res.data.movies)).toBe(true);
   });
@@ -29,6 +32,8 @@ describe("search API zod schema and params", () => {
 
     // invalid: type 'tag' but missing context
     // @ts-expect-error intentionally invalid
-    await expect(() => searchLiveMovies({ type: "tag", lang: "ja" }, client)).rejects.toThrow();
+    await expect(() =>
+      searchLiveMovies({ type: "tag", lang: "ja" }, client)
+    ).rejects.toThrow();
   });
 });
