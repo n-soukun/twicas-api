@@ -14,11 +14,12 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
 
+    permissions:
+      id-token: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -38,36 +39,12 @@ jobs:
       - name: Build
         run: pnpm run build
 
-      - name: Ensure tags
-        run: |
-          git fetch --prune --unshallow --tags || git fetch --tags
-
-      - name: Generate release notes
-        id: generate_notes
-        run: |
-          CURRENT_TAG=${GITHUB_REF_NAME}
-          PREV_TAG=$(git tag --sort=-creatordate | grep -v "${CURRENT_TAG}" | head -n1 || true)
-          if [ -z "$PREV_TAG" ]; then
-            RANGE="$CURRENT_TAG"
-          else
-            RANGE="$PREV_TAG..$CURRENT_TAG"
-          fi
-          echo "Generating release notes for range: $RANGE"
-          git log --pretty=format:'- %s (%an)' $RANGE > RELEASE_NOTES.md || echo "- No changes" > RELEASE_NOTES.md
-          echo "::notice file=RELEASE_NOTES.md::Generated release notes"
-
-      - name: Publish to npm
-        run: pnpm publish --access public --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Create GitHub Release
-        uses: actions/create-release@v1
+      - name: Create Release Pull Request or Publish to npm
+        id: changesets
+        uses: changesets/action@v1
         with:
-          tag_name: ${{ github.ref_name }}
-          release_name: ${{ github.ref_name }}
-          body_path: RELEASE_NOTES.md
-          draft: false
-          prerelease: false
+          commit: "chore: update versions"
+          title: "chore: update versions"
+          publish: pnpm ci:publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
