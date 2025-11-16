@@ -1,6 +1,8 @@
-import type { AxiosInstance, AxiosResponse } from "axios";
 import z from "zod";
 import { movieScheme, userScheme } from "../common/schema";
+import { TwiCasAPIFetchOptions } from ".";
+import { formatResponse, TwiCasAPIEndpointFnReturn } from "./common";
+import { setSearchParams } from "../utils";
 
 // ---- Search Users ---------------------------- //
 // https://apiv2-doc.twitcasting.tv/#search-users //
@@ -20,17 +22,15 @@ export type SearchUsersResponse = z.infer<typeof searchUsersResponseScheme>;
 
 export async function searchUsers(
   params: SearchUsersParams,
-  axios: AxiosInstance
-): Promise<AxiosResponse<SearchUsersResponse>> {
+  option: TwiCasAPIFetchOptions
+): Promise<TwiCasAPIEndpointFnReturn<SearchUsersResponse>> {
   const parsedParams = searchUsersParamsScheme.parse(params);
-  const res = await axios.get(`/search/users`, {
-    params: parsedParams,
-  });
-  const parsedData = searchUsersResponseScheme.parse(res.data);
-  return {
-    ...res,
-    data: parsedData,
-  };
+  const url = setSearchParams(
+    new URL(`${option.baseUrl}/search/users`),
+    parsedParams
+  );
+  const res = await fetch(url.toString(), { headers: option.headers });
+  return formatResponse<SearchUsersResponse>(res, searchUsersResponseScheme);
 }
 
 // ---- Search Live Movies ---------------------------- //
@@ -70,15 +70,16 @@ export type SearchLiveMoviesResponse = z.infer<
 
 export async function searchLiveMovies(
   params: SearchLiveMoviesParams,
-  axios: AxiosInstance
-): Promise<AxiosResponse<SearchLiveMoviesResponse>> {
+  option: TwiCasAPIFetchOptions
+): Promise<TwiCasAPIEndpointFnReturn<SearchLiveMoviesResponse>> {
   const parsedParams = searchLiveMoviesParamsScheme.parse(params);
-  const res = await axios.get(`/search/lives`, {
-    params: parsedParams,
-  });
-  const parsedData = searchLiveMoviesResponseScheme.parse(res.data);
-  return {
-    ...res,
-    data: parsedData,
-  };
+  const url = setSearchParams(
+    new URL(`${option.baseUrl}/search/lives`),
+    parsedParams
+  );
+  const res = await fetch(url.toString(), { headers: option.headers });
+  return formatResponse<SearchLiveMoviesResponse>(
+    res,
+    searchLiveMoviesResponseScheme
+  );
 }

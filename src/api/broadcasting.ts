@@ -1,5 +1,6 @@
-import type { AxiosInstance, AxiosResponse } from "axios";
 import z from "zod";
+import { TwiCasAPIFetchOptions } from ".";
+import { formatResponse, TwiCasAPIEndpointFnReturn } from "./common";
 
 // ---- Get RTMP Url ---------------------------- //
 // https://apiv2-doc.twitcasting.tv/#get-rtmp-url //
@@ -13,12 +14,10 @@ const getRTMPUrlResponseScheme = z.looseObject({
 export type GetRTMPUrlResponse = z.infer<typeof getRTMPUrlResponseScheme>;
 
 export async function getRTMPUrl(
-  axios: AxiosInstance
-): Promise<AxiosResponse<GetRTMPUrlResponse>> {
-  const res = await axios.get(`/rtmp_url`);
-  const parsedData = getRTMPUrlResponseScheme.parse(res.data);
-  return {
-    ...res,
-    data: parsedData,
-  };
+  option: TwiCasAPIFetchOptions
+): Promise<TwiCasAPIEndpointFnReturn<GetRTMPUrlResponse>> {
+  const res = await fetch(`${option.baseUrl}/rtmp_url`, {
+    headers: option.headers,
+  });
+  return formatResponse<GetRTMPUrlResponse>(res, getRTMPUrlResponseScheme);
 }

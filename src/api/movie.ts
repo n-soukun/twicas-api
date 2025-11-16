@@ -1,6 +1,8 @@
-import type { AxiosInstance, AxiosResponse } from "axios";
 import z from "zod";
 import { movieScheme, userScheme } from "../common/schema";
+import { TwiCasAPIFetchOptions } from ".";
+import { formatResponse, TwiCasAPIEndpointFnReturn } from "./common";
+import { setSearchParams } from "../utils";
 
 // ---- Get Movie Info ---------------------------- //
 // https://apiv2-doc.twitcasting.tv/#get-movie-info //
@@ -15,14 +17,12 @@ export type GetMovieInfoResponse = z.infer<typeof getMovieInfoResponseScheme>;
 
 export async function getMovieInfo(
   movieId: string,
-  axios: AxiosInstance
-): Promise<AxiosResponse<GetMovieInfoResponse>> {
-  const res = await axios.get(`/movies/${movieId}`);
-  const parsedData = getMovieInfoResponseScheme.parse(res.data);
-  return {
-    ...res,
-    data: parsedData,
-  };
+  option: TwiCasAPIFetchOptions
+): Promise<TwiCasAPIEndpointFnReturn<GetMovieInfoResponse>> {
+  const res = await fetch(`${option.baseUrl}/movies/${movieId}`, {
+    headers: option.headers,
+  });
+  return formatResponse<GetMovieInfoResponse>(res, getMovieInfoResponseScheme);
 }
 
 // ---- Get Movies by User ---------------------------- //
@@ -47,17 +47,18 @@ export type GetMoviesByUserResponse = z.infer<
 export async function getMoviesByUser(
   userId: string,
   params: GetMoviesByUserParams,
-  axios: AxiosInstance
-): Promise<AxiosResponse<GetMoviesByUserResponse>> {
+  option: TwiCasAPIFetchOptions
+): Promise<TwiCasAPIEndpointFnReturn<GetMoviesByUserResponse>> {
   const parsedParams = getMoviesByUserParamsScheme.parse(params);
-  const res = await axios.get(`/users/${userId}/movies`, {
-    params: parsedParams,
-  });
-  const parsedData = getMoviesByUserResponseScheme.parse(res.data);
-  return {
-    ...res,
-    data: parsedData,
-  };
+  const url = setSearchParams(
+    new URL(`${option.baseUrl}/users/${userId}/movies`),
+    parsedParams
+  );
+  const res = await fetch(url.toString(), { headers: option.headers });
+  return formatResponse<GetMoviesByUserResponse>(
+    res,
+    getMoviesByUserResponseScheme
+  );
 }
 
 // ---- Get Current Live ---------------------------- //
@@ -75,14 +76,15 @@ export type GetCurrentLiveResponse = z.infer<
 
 export async function getCurrentLive(
   userId: string,
-  axios: AxiosInstance
-): Promise<AxiosResponse<GetCurrentLiveResponse>> {
-  const res = await axios.get(`/users/${userId}/current_live`);
-  const parsedData = getCurrentLiveResponseScheme.parse(res.data);
-  return {
-    ...res,
-    data: parsedData,
-  };
+  option: TwiCasAPIFetchOptions
+): Promise<TwiCasAPIEndpointFnReturn<GetCurrentLiveResponse>> {
+  const res = await fetch(`${option.baseUrl}/users/${userId}/current_live`, {
+    headers: option.headers,
+  });
+  return formatResponse<GetCurrentLiveResponse>(
+    res,
+    getCurrentLiveResponseScheme
+  );
 }
 
 // ---- Set Current Live Subtitle ---------------------------- //
@@ -106,15 +108,20 @@ export type SetCurrentLiveSubtitleResponse = z.infer<
 
 export async function setCurrentLiveSubtitle(
   params: SetCurrentLiveSubtitleParams,
-  axios: AxiosInstance
-): Promise<AxiosResponse<SetCurrentLiveSubtitleResponse>> {
+  option: TwiCasAPIFetchOptions
+): Promise<TwiCasAPIEndpointFnReturn<SetCurrentLiveSubtitleResponse>> {
   const parsedParams = setCurrentLiveSubtitleParamsScheme.parse(params);
-  const res = await axios.post(`/movies/subtitle`, parsedParams);
-  const parsedData = setCurrentLiveSubtitleResponseScheme.parse(res.data);
-  return {
-    ...res,
-    data: parsedData,
-  };
+  const headers = new Headers(option.headers);
+  headers.set("Content-Type", "application/json");
+  const res = await fetch(`${option.baseUrl}/movies/subtitle`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(parsedParams),
+  });
+  return formatResponse<SetCurrentLiveSubtitleResponse>(
+    res,
+    setCurrentLiveSubtitleResponseScheme
+  );
 }
 
 // ---- Unset Current Live Subtitle ---------------------------- //
@@ -130,14 +137,16 @@ export type UnsetCurrentLiveSubtitleResponse = z.infer<
 >;
 
 export async function unsetCurrentLiveSubtitle(
-  axios: AxiosInstance
-): Promise<AxiosResponse<UnsetCurrentLiveSubtitleResponse>> {
-  const res = await axios.delete(`/movies/subtitle`);
-  const parsedData = unsetCurrentLiveSubtitleResponseScheme.parse(res.data);
-  return {
-    ...res,
-    data: parsedData,
-  };
+  option: TwiCasAPIFetchOptions
+): Promise<TwiCasAPIEndpointFnReturn<UnsetCurrentLiveSubtitleResponse>> {
+  const res = await fetch(`${option.baseUrl}/movies/subtitle`, {
+    method: "DELETE",
+    headers: option.headers,
+  });
+  return formatResponse<UnsetCurrentLiveSubtitleResponse>(
+    res,
+    unsetCurrentLiveSubtitleResponseScheme
+  );
 }
 
 // ---- Set Current Live Hashtag ---------------------------- //
@@ -167,15 +176,20 @@ export type SetCurrentLiveHashtagResponse = z.infer<
 
 export async function setCurrentLiveHashtag(
   params: SetCurrentLiveHashtagParams,
-  axios: AxiosInstance
-): Promise<AxiosResponse<SetCurrentLiveHashtagResponse>> {
+  option: TwiCasAPIFetchOptions
+): Promise<TwiCasAPIEndpointFnReturn<SetCurrentLiveHashtagResponse>> {
   const parsedParams = setCurrentLiveHashtagParamsScheme.parse(params);
-  const res = await axios.post(`/movies/hashtag`, parsedParams);
-  const parsedData = setCurrentLiveHashtagResponseScheme.parse(res.data);
-  return {
-    ...res,
-    data: parsedData,
-  };
+  const headers = new Headers(option.headers);
+  headers.set("Content-Type", "application/json");
+  const res = await fetch(`${option.baseUrl}/movies/hashtag`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(parsedParams),
+  });
+  return formatResponse<SetCurrentLiveHashtagResponse>(
+    res,
+    setCurrentLiveHashtagResponseScheme
+  );
 }
 
 // ---- Unset Current Live Hashtag ---------------------------- //
@@ -191,12 +205,14 @@ export type UnsetCurrentLiveHashtagResponse = z.infer<
 >;
 
 export async function unsetCurrentLiveHashtag(
-  axios: AxiosInstance
-): Promise<AxiosResponse<UnsetCurrentLiveHashtagResponse>> {
-  const res = await axios.delete(`/movies/hashtag`);
-  const parsedData = unsetCurrentLiveHashtagResponseScheme.parse(res.data);
-  return {
-    ...res,
-    data: parsedData,
-  };
+  option: TwiCasAPIFetchOptions
+): Promise<TwiCasAPIEndpointFnReturn<UnsetCurrentLiveHashtagResponse>> {
+  const res = await fetch(`${option.baseUrl}/movies/hashtag`, {
+    method: "DELETE",
+    headers: option.headers,
+  });
+  return formatResponse<UnsetCurrentLiveHashtagResponse>(
+    res,
+    unsetCurrentLiveHashtagResponseScheme
+  );
 }

@@ -1,6 +1,8 @@
-import type { AxiosInstance, AxiosResponse } from "axios";
 import z from "zod";
 import { webHookScheme } from "../common/schema";
+import { TwiCasAPIFetchOptions } from ".";
+import { formatResponse, TwiCasAPIEndpointFnReturn } from "./common";
+import { setSearchParams } from "../utils";
 
 // ---- Get WebHook List ---------------------------- //
 // https://apiv2-doc.twitcasting.tv/#get-webhook-list //
@@ -23,17 +25,18 @@ export type GetWebHookListResponse = z.infer<
 
 export async function getWebHookList(
   params: GetWebHookListParams,
-  axios: AxiosInstance
-): Promise<AxiosResponse<GetWebHookListResponse>> {
+  option: TwiCasAPIFetchOptions
+): Promise<TwiCasAPIEndpointFnReturn<GetWebHookListResponse>> {
   const parsedParams = getWebHookListParamsScheme.parse(params);
-  const res = await axios.get(`/webhooks`, {
-    params: parsedParams,
-  });
-  const parsedData = getWebHookListResponseScheme.parse(res.data);
-  return {
-    ...res,
-    data: parsedData,
-  };
+  const url = setSearchParams(
+    new URL(`${option.baseUrl}/webhooks`),
+    parsedParams
+  );
+  const res = await fetch(url.toString(), { headers: option.headers });
+  return formatResponse<GetWebHookListResponse>(
+    res,
+    getWebHookListResponseScheme
+  );
 }
 
 // ---- Register WebHook ---------------------------- //
@@ -56,15 +59,20 @@ export type RegisterWebHookResponse = z.infer<
 
 export async function registerWebHook(
   params: RegisterWebHookParams,
-  axios: AxiosInstance
-): Promise<AxiosResponse<RegisterWebHookResponse>> {
+  option: TwiCasAPIFetchOptions
+): Promise<TwiCasAPIEndpointFnReturn<RegisterWebHookResponse>> {
   const parsedParams = registerWebHookParamsScheme.parse(params);
-  const res = await axios.post(`/webhooks`, parsedParams);
-  const parsedData = registerWebHookResponseScheme.parse(res.data);
-  return {
-    ...res,
-    data: parsedData,
-  };
+  const headers = new Headers(option.headers);
+  headers.set("Content-Type", "application/json");
+  const res = await fetch(`${option.baseUrl}/webhooks`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(parsedParams),
+  });
+  return formatResponse<RegisterWebHookResponse>(
+    res,
+    registerWebHookResponseScheme
+  );
 }
 
 // ---- Remove WebHook ---------------------------- //
@@ -85,15 +93,18 @@ export type RemoveWebHookResponse = z.infer<typeof removeWebHookResponseScheme>;
 
 export async function removeWebHook(
   params: RemoveWebHookParams,
-  axios: AxiosInstance
-): Promise<AxiosResponse<RemoveWebHookResponse>> {
+  option: TwiCasAPIFetchOptions
+): Promise<TwiCasAPIEndpointFnReturn<RemoveWebHookResponse>> {
   const parsedParams = removeWebHookParamsScheme.parse(params);
-  const res = await axios.delete(`/webhooks`, {
-    data: parsedParams,
+  const headers = new Headers(option.headers);
+  headers.set("Content-Type", "application/json");
+  const res = await fetch(`${option.baseUrl}/webhooks`, {
+    method: "DELETE",
+    headers,
+    body: JSON.stringify(parsedParams),
   });
-  const parsedData = removeWebHookResponseScheme.parse(res.data);
-  return {
-    ...res,
-    data: parsedData,
-  };
+  return formatResponse<RemoveWebHookResponse>(
+    res,
+    removeWebHookResponseScheme
+  );
 }

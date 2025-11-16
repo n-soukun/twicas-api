@@ -1,6 +1,8 @@
-import type { AxiosInstance, AxiosResponse } from "axios";
 import z from "zod";
 import { commentScheme } from "../common/schema";
+import { TwiCasAPIFetchOptions } from ".";
+import { formatResponse, TwiCasAPIEndpointFnReturn } from "./common";
+import { setSearchParams } from "../utils";
 
 // ---- Get Comments ---------------------------- //
 // https://apiv2-doc.twitcasting.tv/#get-comments //
@@ -23,17 +25,15 @@ export type GetCommentsResponse = z.infer<typeof getCommentsResponseScheme>;
 export async function getComments(
   movieId: string,
   params: GetCommentsParams,
-  axios: AxiosInstance
-): Promise<AxiosResponse<GetCommentsResponse>> {
+  option: TwiCasAPIFetchOptions
+): Promise<TwiCasAPIEndpointFnReturn<GetCommentsResponse>> {
   const parsedParams = getCommentsParamsScheme.parse(params);
-  const res = await axios.get(`/movies/${movieId}/comments`, {
-    params: parsedParams,
-  });
-  const parsedData = getCommentsResponseScheme.parse(res.data);
-  return {
-    ...res,
-    data: parsedData,
-  };
+  const url = setSearchParams(
+    new URL(`${option.baseUrl}/movies/${movieId}/comments`),
+    parsedParams
+  );
+  const res = await fetch(url.toString(), { headers: option.headers });
+  return formatResponse<GetCommentsResponse>(res, getCommentsResponseScheme);
 }
 
 // ---- Post Comment ---------------------------- //
@@ -55,15 +55,17 @@ export type PostCommentResponse = z.infer<typeof postCommentResponseScheme>;
 export async function postComment(
   movieId: string,
   params: PostCommentParams,
-  axios: AxiosInstance
-): Promise<AxiosResponse<PostCommentResponse>> {
+  option: TwiCasAPIFetchOptions
+): Promise<TwiCasAPIEndpointFnReturn<PostCommentResponse>> {
   const parsedParams = postCommentParamsScheme.parse(params);
-  const res = await axios.post(`/movies/${movieId}/comments`, parsedParams);
-  const parsedData = postCommentResponseScheme.parse(res.data);
-  return {
-    ...res,
-    data: parsedData,
-  };
+  const headers = new Headers(option.headers);
+  headers.set("Content-Type", "application/json");
+  const res = await fetch(`${option.baseUrl}/movies/${movieId}/comments`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(parsedParams),
+  });
+  return formatResponse<PostCommentResponse>(res, postCommentResponseScheme);
 }
 
 // ---- Delete Comment ---------------------------- //
@@ -78,12 +80,17 @@ export type DeleteCommentResponse = z.infer<typeof deleteCommentResponseScheme>;
 export async function deleteComment(
   movieId: string,
   commentId: string,
-  axios: AxiosInstance
-): Promise<AxiosResponse<DeleteCommentResponse>> {
-  const res = await axios.delete(`/movies/${movieId}/comments/${commentId}`);
-  const parsedData = deleteCommentResponseScheme.parse(res.data);
-  return {
-    ...res,
-    data: parsedData,
-  };
+  option: TwiCasAPIFetchOptions
+): Promise<TwiCasAPIEndpointFnReturn<DeleteCommentResponse>> {
+  const res = await fetch(
+    `${option.baseUrl}/movies/${movieId}/comments/${commentId}`,
+    {
+      method: "DELETE",
+      headers: option.headers,
+    }
+  );
+  return formatResponse<DeleteCommentResponse>(
+    res,
+    deleteCommentResponseScheme
+  );
 }

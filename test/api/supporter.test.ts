@@ -1,4 +1,3 @@
-import axios from "axios";
 import { expect, test, describe } from "vitest";
 import {
   getSupportingStatus,
@@ -8,14 +7,17 @@ import {
   getSupporterList,
 } from "../../src/api/supporter";
 
-const client = axios.create({ baseURL: "https://api.twitcasting.tv" });
+const fetchOptions = {
+  baseUrl: "https://api.twitcasting.tv",
+  headers: new Headers(),
+};
 
 describe("supporter API zod schema and params", () => {
   test("getSupportingStatus valid params parses response", async () => {
     const res = await getSupportingStatus(
       "user-1",
       { target_user_id: "3160885238" },
-      client
+      fetchOptions
     );
     expect(res.data).toHaveProperty("is_supporting");
     expect(res.data).toHaveProperty("target_user");
@@ -23,23 +25,29 @@ describe("supporter API zod schema and params", () => {
 
   test("getSupportingStatus invalid params throws", async () => {
     await expect(() =>
-      getSupportingStatus("user-1", {} as any, client)
+      getSupportingStatus("user-1", {} as any, fetchOptions)
     ).rejects.toThrow();
   });
 
   test("supportUser and unsupportUser validate params", async () => {
-    const supRes = await supportUser({ target_user_ids: ["1", "2"] }, client);
+    const supRes = await supportUser(
+      { target_user_ids: ["1", "2"] },
+      fetchOptions
+    );
     expect(supRes.data).toHaveProperty("added_count");
 
     await expect(() =>
-      supportUser({ target_user_ids: [] }, client)
+      supportUser({ target_user_ids: [] }, fetchOptions)
     ).rejects.toThrow();
 
-    const unsupRes = await unsupportUser({ target_user_ids: ["1"] }, client);
+    const unsupRes = await unsupportUser(
+      { target_user_ids: ["1"] },
+      fetchOptions
+    );
     expect(unsupRes.data).toHaveProperty("removed_count");
 
     await expect(() =>
-      unsupportUser({ target_user_ids: [] }, client)
+      unsupportUser({ target_user_ids: [] }, fetchOptions)
     ).rejects.toThrow();
   });
 
@@ -47,18 +55,18 @@ describe("supporter API zod schema and params", () => {
     const supList = await getSupportingList(
       "user-1",
       { offset: 0, limit: 10 },
-      client
+      fetchOptions
     );
     expect(supList.data).toHaveProperty("total");
 
     await expect(() =>
-      getSupportingList("user-1", { offset: -1, limit: 10 }, client)
+      getSupportingList("user-1", { offset: -1, limit: 10 }, fetchOptions)
     ).rejects.toThrow();
 
     const supporterList = await getSupporterList(
       "user-1",
       { offset: 0, limit: 10, sort: "new" },
-      client
+      fetchOptions
     );
     expect(supporterList.data).toHaveProperty("total");
 
@@ -66,7 +74,7 @@ describe("supporter API zod schema and params", () => {
       getSupporterList(
         "user-1",
         { offset: 0, limit: 10, sort: "bad" } as any,
-        client
+        fetchOptions
       )
     ).rejects.toThrow();
   });

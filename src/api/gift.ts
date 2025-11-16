@@ -1,6 +1,8 @@
-import type { AxiosInstance, AxiosResponse } from "axios";
 import z from "zod";
 import { giftScheme } from "../common/schema";
+import { TwiCasAPIFetchOptions } from ".";
+import { formatResponse, TwiCasAPIEndpointFnReturn } from "./common";
+import { setSearchParams } from "../utils";
 
 // ---- Get Gifts ---------------------------- //
 // https://apiv2-doc.twitcasting.tv/#get-gifts //
@@ -19,15 +21,10 @@ export type GetGiftsResponse = z.infer<typeof getGiftsResponseScheme>;
 
 export async function getGifts(
   params: GetGiftsParams,
-  axios: AxiosInstance
-): Promise<AxiosResponse<GetGiftsResponse>> {
+  option: TwiCasAPIFetchOptions
+): Promise<TwiCasAPIEndpointFnReturn<GetGiftsResponse>> {
   const parsedParams = getGiftsParamsScheme.parse(params);
-  const res = await axios.get(`/gifts`, {
-    params: parsedParams,
-  });
-  const parsedData = getGiftsResponseScheme.parse(res.data);
-  return {
-    ...res,
-    data: parsedData,
-  };
+  const url = setSearchParams(new URL(`${option.baseUrl}/gifts`), parsedParams);
+  const res = await fetch(url.toString(), { headers: option.headers });
+  return formatResponse<GetGiftsResponse>(res, getGiftsResponseScheme);
 }

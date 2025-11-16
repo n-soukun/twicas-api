@@ -1,6 +1,8 @@
-import type { AxiosInstance, AxiosResponse } from "axios";
 import z from "zod";
 import { userScheme, supporterUserScheme } from "../common/schema";
+import { TwiCasAPIFetchOptions } from ".";
+import { formatResponse, TwiCasAPIEndpointFnReturn } from "./common";
+import { setSearchParams } from "../utils";
 
 // ---- Get Supporting Status ---------------------------- //
 // https://apiv2-doc.twitcasting.tv/#get-supporting-status //
@@ -25,17 +27,18 @@ export type GetSupportingStatusResponse = z.infer<
 export async function getSupportingStatus(
   userId: string,
   params: GetSupportingStatusParams,
-  axios: AxiosInstance
-): Promise<AxiosResponse<GetSupportingStatusResponse>> {
+  option: TwiCasAPIFetchOptions
+): Promise<TwiCasAPIEndpointFnReturn<GetSupportingStatusResponse>> {
   const parsedParams = getSupportingStatusParamsScheme.parse(params);
-  const res = await axios.get(`/users/${userId}/supporting_status`, {
-    params: parsedParams,
-  });
-  const parsedData = getSupportingStatusResponseScheme.parse(res.data);
-  return {
-    ...res,
-    data: parsedData,
-  };
+  const url = setSearchParams(
+    new URL(`${option.baseUrl}/users/${userId}/supporting_status`),
+    parsedParams
+  );
+  const res = await fetch(url.toString(), { headers: option.headers });
+  return formatResponse<GetSupportingStatusResponse>(
+    res,
+    getSupportingStatusResponseScheme
+  );
 }
 
 // ---- Support User ---------------------------- //
@@ -54,15 +57,17 @@ export type SupportUserResponse = z.infer<typeof supportUserResponseScheme>;
 
 export async function supportUser(
   params: SupportUserParams,
-  axios: AxiosInstance
-): Promise<AxiosResponse<SupportUserResponse>> {
+  option: TwiCasAPIFetchOptions
+): Promise<TwiCasAPIEndpointFnReturn<SupportUserResponse>> {
   const parsedParams = supportUserParamsScheme.parse(params);
-  const res = await axios.put(`/support`, parsedParams);
-  const parsedData = supportUserResponseScheme.parse(res.data);
-  return {
-    ...res,
-    data: parsedData,
-  };
+  const headers = new Headers(option.headers);
+  headers.set("Content-Type", "application/json");
+  const res = await fetch(`${option.baseUrl}/support`, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify(parsedParams),
+  });
+  return formatResponse<SupportUserResponse>(res, supportUserResponseScheme);
 }
 
 // ---- Unsupport User ---------------------------- //
@@ -81,15 +86,20 @@ export type UnsupportUserResponse = z.infer<typeof unsupportUserResponseScheme>;
 
 export async function unsupportUser(
   params: UnsupportUserParams,
-  axios: AxiosInstance
-): Promise<AxiosResponse<UnsupportUserResponse>> {
+  option: TwiCasAPIFetchOptions
+): Promise<TwiCasAPIEndpointFnReturn<UnsupportUserResponse>> {
   const parsedParams = unsupportUserParamsScheme.parse(params);
-  const res = await axios.put(`/unsupport`, parsedParams);
-  const parsedData = unsupportUserResponseScheme.parse(res.data);
-  return {
-    ...res,
-    data: parsedData,
-  };
+  const headers = new Headers(option.headers);
+  headers.set("Content-Type", "application/json");
+  const res = await fetch(`${option.baseUrl}/unsupport`, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify(parsedParams),
+  });
+  return formatResponse<UnsupportUserResponse>(
+    res,
+    unsupportUserResponseScheme
+  );
 }
 
 // ---- Supporting List ---------------------------- //
@@ -115,17 +125,18 @@ export type GetSupportingListResponse = z.infer<
 export async function getSupportingList(
   userId: string,
   params: GetSupportingListParams,
-  axios: AxiosInstance
-): Promise<AxiosResponse<GetSupportingListResponse>> {
+  option: TwiCasAPIFetchOptions
+): Promise<TwiCasAPIEndpointFnReturn<GetSupportingListResponse>> {
   const parsedParams = getSupportingListParamsScheme.parse(params);
-  const res = await axios.get(`/users/${userId}/supporting`, {
-    params: parsedParams,
-  });
-  const parsedData = getSupportingListResponseScheme.parse(res.data);
-  return {
-    ...res,
-    data: parsedData,
-  };
+  const url = setSearchParams(
+    new URL(`${option.baseUrl}/users/${userId}/supporting`),
+    parsedParams
+  );
+  const res = await fetch(url.toString(), { headers: option.headers });
+  return formatResponse<GetSupportingListResponse>(
+    res,
+    getSupportingListResponseScheme
+  );
 }
 
 // ---- Supporter List ---------------------------- //
@@ -152,15 +163,16 @@ export type GetSupporterListResponse = z.infer<
 export async function getSupporterList(
   userId: string,
   params: GetSupporterListParams,
-  axios: AxiosInstance
-): Promise<AxiosResponse<GetSupporterListResponse>> {
+  option: TwiCasAPIFetchOptions
+): Promise<TwiCasAPIEndpointFnReturn<GetSupporterListResponse>> {
   const parsedParams = getSupporterListParamsScheme.parse(params);
-  const res = await axios.get(`/users/${userId}/supporters`, {
-    params: parsedParams,
-  });
-  const parsedData = getSupporterListResponseScheme.parse(res.data);
-  return {
-    ...res,
-    data: parsedData,
-  };
+  const url = setSearchParams(
+    new URL(`${option.baseUrl}/users/${userId}/supporters`),
+    parsedParams
+  );
+  const res = await fetch(url.toString(), { headers: option.headers });
+  return formatResponse<GetSupporterListResponse>(
+    res,
+    getSupporterListResponseScheme
+  );
 }

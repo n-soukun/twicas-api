@@ -1,6 +1,7 @@
-import type { AxiosInstance, AxiosResponse } from "axios";
 import z from "zod";
 import { userScheme } from "../common/schema";
+import { TwiCasAPIFetchOptions } from ".";
+import { formatResponse, TwiCasAPIEndpointFnReturn } from "./common";
 
 // ---- Get User Info ---------------------------- //
 // https://apiv2-doc.twitcasting.tv/#get-user-info //
@@ -15,14 +16,12 @@ export type GetUserInfoResponse = z.infer<typeof getUserInfoResponseScheme>;
 
 export async function getUserInfo(
   userId: string,
-  axios: AxiosInstance
-): Promise<AxiosResponse<GetUserInfoResponse>> {
-  const res = await axios.get(`/users/${userId}`);
-  const parsedData = getUserInfoResponseScheme.parse(res.data);
-  return {
-    ...res,
-    data: parsedData,
-  };
+  option: TwiCasAPIFetchOptions
+): Promise<TwiCasAPIEndpointFnReturn<GetUserInfoResponse>> {
+  const res = await fetch(`${option.baseUrl}/users/${userId}`, {
+    headers: option.headers,
+  });
+  return formatResponse<GetUserInfoResponse>(res, getUserInfoResponseScheme);
 }
 
 // ---- Verify Credentials ---------------------------- //
@@ -47,12 +46,13 @@ export type VerifyCredentialsResponse = z.infer<
 >;
 
 export async function verifyCredentials(
-  axios: AxiosInstance
-): Promise<AxiosResponse<VerifyCredentialsResponse>> {
-  const res = await axios.get(`/verify_credentials`);
-  const parsedData = verifyCredentialsResponseScheme.parse(res.data);
-  return {
-    ...res,
-    data: parsedData,
-  };
+  option: TwiCasAPIFetchOptions
+): Promise<TwiCasAPIEndpointFnReturn<VerifyCredentialsResponse>> {
+  const res = await fetch(`${option.baseUrl}/verify_credentials`, {
+    headers: option.headers,
+  });
+  return formatResponse<VerifyCredentialsResponse>(
+    res,
+    verifyCredentialsResponseScheme
+  );
 }
