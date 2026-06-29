@@ -30,6 +30,8 @@ const exampleGetMovieInfoResponse = {
     created: 1438500282,
     is_collabo: false,
     is_protected: false,
+    is_membership: false,
+    is_premier: false,
     max_view_count: 1675,
     current_view_count: 20848,
     total_view_count: 20848,
@@ -83,6 +85,8 @@ const exampleGetMoviesByUserResponse = {
       created: 1479379075,
       is_collabo: false,
       is_protected: false,
+      is_membership: false,
+      is_premier: false,
       max_view_count: 22,
       current_view_count: 71,
       total_view_count: 71,
@@ -108,6 +112,8 @@ const exampleGetMoviesByUserResponse = {
       created: 1438500282,
       is_collabo: false,
       is_protected: false,
+      is_membership: false,
+      is_premier: false,
       max_view_count: 1675,
       current_view_count: 20848,
       total_view_count: 20848,
@@ -137,6 +143,8 @@ const exampleGetCurrentLiveResponse = {
     created: 1438500282,
     is_collabo: false,
     is_protected: false,
+    is_membership: false,
+    is_premier: false,
     max_view_count: 1675,
     current_view_count: 20848,
     total_view_count: 20848,
@@ -192,48 +200,48 @@ export const movieHandlers = [
     "*/movies/:movieId",
     () => {
       return HttpResponse.json(exampleGetMovieInfoResponse);
-    }
+    },
   ),
 
   http.get<{ userId: string }, never, GetMoviesByUserResponse>(
     "*/users/:userId/movies",
     () => {
       return HttpResponse.json(exampleGetMoviesByUserResponse);
-    }
+    },
   ),
 
   http.get<{ userId: string }, never, GetCurrentLiveResponse>(
     "*/users/:userId/current_live",
     () => {
       return HttpResponse.json(exampleGetCurrentLiveResponse);
-    }
+    },
   ),
 
   http.post<never, { subtitle: string }, SetCurrentLiveSubtitleResponse>(
     "*/movies/subtitle",
     () => {
       return HttpResponse.json(exampleSetCurrentLiveSubtitleResponse);
-    }
+    },
   ),
 
   http.delete<never, never, UnsetCurrentLiveSubtitleResponse>(
     "*/movies/subtitle",
     () => {
       return HttpResponse.json(exampleUnsetCurrentLiveSubtitleResponse);
-    }
+    },
   ),
 
   http.post<never, { hashtag: string }, SetCurrentLiveHashtagResponse>(
     "*/movies/hashtag",
     () => {
       return HttpResponse.json(exampleSetCurrentLiveHashtagResponse);
-    }
+    },
   ),
 
   http.delete<never, never, UnsetCurrentLiveHashtagResponse>(
     "*/movies/hashtag",
     () => {
       return HttpResponse.json(exampleUnsetCurrentLiveHashtagResponse);
-    }
+    },
   ),
 ];

@@ -32,6 +32,8 @@ export const movieScheme = z.looseObject({
   created: z.number(),
   is_collabo: z.boolean(),
   is_protected: z.boolean(),
+  is_membership: z.boolean(),
+  is_premier: z.boolean(),
   max_view_count: z.number(),
   current_view_count: z.number(),
   total_view_count: z.number(),
